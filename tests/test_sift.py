@@ -10,7 +10,7 @@ print(cv2.__version__)
 
 def get_sample_images():
     octo_front = cv2.imread('images/Octopus_Far_Front.jpg')
-    octo_offset = cv2.imread('images/Octopus_Far_Offset.jpg')
+    octo_offset = cv2.imread('images/Octopus_Far_Offset.jpg')   # keypoint_descriptor.jpg
     return octo_front, octo_offset
 
 
@@ -40,7 +40,7 @@ class TestSIFT(TestCase):
     def test_image_matching(self):
         octo_front, octo_offset = get_sample_images()
 
-        plt.imshow(sift.match_images(octo_front, octo_offset, 150))
+        plt.imshow(sift.match_images(octo_front, octo_offset, lines=50))
         plt.show()
 
     def test_show_desc(self):

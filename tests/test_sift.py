@@ -9,8 +9,8 @@ print(cv2.__version__)
 
 
 def get_sample_images():
-    octo_front = cv2.imread('images/Octopus_Far_Front.jpg')   # Octopus_carton.jpg
-    octo_offset = cv2.imread('images/Octopus_Far_Offset.jpg')
+    octo_front = cv2.imread('images/Octopus_Far_Front.jpg')     # Octopus_carton.jpg
+    octo_offset = cv2.imread('images/Octopus_Far_Offset.jpg')   # Octopus_in_the_sea.jpg
     return octo_front, octo_offset
 
 
@@ -50,7 +50,7 @@ class TestSIFT(TestCase):
         plt.show()
 
     def test_show_desc(self):
-        """ 显示 4 幅对比图 """
+        """ 显示 4 对 descriptor 对比图 """
 
         octo_front, octo_offset = get_sample_images()
 

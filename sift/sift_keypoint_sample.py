@@ -1,8 +1,8 @@
 import cv2
 
 
-def fetch_sift_info(img):
-    gray_img = to_gray(img)
+def fetch_sift_info(img, gaussian):
+    gray_img = gaussian(img)
     kp, desc = gen_sift_features(gray_img)
     return gray_img, kp, desc
 
@@ -11,6 +11,12 @@ def to_gray(color_img, mode=cv2.COLOR_BGR2GRAY):
     """ 转成灰阶图 """
     gray = cv2.cvtColor(color_img, mode)  # cv2.CV_32S
     return gray
+
+
+def to_canny(img, low_threshold=100, ratio=3):
+    """ 抽取轮廓 """
+    edges = cv2.Canny(img, low_threshold, ratio * low_threshold, cv2.COLOR_BGR2GRAY)
+    return edges
 
 
 def gen_sift_features(gray_img):
@@ -42,16 +48,16 @@ def inspect_keypoint_and_descriptor(keypoints, descriptors, index):
     print('\n\tdescriptor:\n', desc)
 
 
-def show_img_keypoint(img):
+def show_img_keypoint(img, gaussian=to_gray):
     """ 返回带有 keypoint 的图 """
-    gray_img, kp, desc = fetch_sift_info(img)
+    gray_img, kp, desc = fetch_sift_info(img, gaussian)
 
     # 合成带有 keypoint 的图
     kp_img = cv2.drawKeypoints(img, kp, img.copy())
     return kp_img, kp
 
 
-def match_images(left_img, right_img, lines=None, distance=0.7):
+def match_images(left_img, right_img, gaussian=to_gray, lines=None, distance=0.7):
     """
     比对两组关键点描述，查找出相同的点位.
 
@@ -59,8 +65,8 @@ def match_images(left_img, right_img, lines=None, distance=0.7):
 
     参考：　https://www.cnblogs.com/wangguchangqing/p/4333873.html
     """
-    left_gray_img, left_kp, left_desc = fetch_sift_info(left_img)
-    right_gray_img, right_kp, right_desc = fetch_sift_info(right_img)
+    left_gray_img, left_kp, left_desc = fetch_sift_info(left_img, gaussian)
+    right_gray_img, right_kp, right_desc = fetch_sift_info(right_img, gaussian)
 
     bf = cv2.BFMatcher(cv2.NORM_L2)
 
@@ -68,7 +74,7 @@ def match_images(left_img, right_img, lines=None, distance=0.7):
 
     good = []
     for m in matches:
-        if m[0].distance/m[1].distance < distance:      #if m.distance/250 < distance:   ???
+        if 0 != m[1].distance and m[0].distance/m[1].distance < distance:      #if m.distance/250 < distance:   ???
             good.append(m)
 
     matched_img = cv2.drawMatchesKnn(                   ##matched_img = cv2.drawMatches(

@@ -9,8 +9,8 @@ print(cv2.__version__)
 
 
 def get_sample_images():
-    octo_front = cv2.imread('images/Octopus_Far_Front.jpg')
-    octo_offset = cv2.imread('images/Octopus_Far_Offset.jpg')   # Octopus_in_the_sea.jpg
+    octo_front = cv2.imread('images/Octopus_Far_Front.jpg')   # Octopus_carton.jpg
+    octo_offset = cv2.imread('images/Octopus_Far_Offset.jpg')
     return octo_front, octo_offset
 
 
@@ -28,6 +28,12 @@ def draw_circle(kp):
 
 class TestSIFT(TestCase):
 
+    def test_canny(self):
+        octo_front, _ = get_sample_images()
+        edges_img = sift.to_canny(octo_front)
+        plt.imshow(edges_img)
+        plt.show()
+
     def test_sift_keypoint(self):
         octo_front, octo_offset = get_sample_images()
 
@@ -40,7 +46,7 @@ class TestSIFT(TestCase):
     def test_image_matching(self):
         octo_front, octo_offset = get_sample_images()
 
-        plt.imshow(sift.match_images(octo_front, octo_offset))
+        plt.imshow(sift.match_images(octo_front, octo_offset, gaussian=sift.to_gray))
         plt.show()
 
     def test_show_desc(self):
@@ -50,7 +56,7 @@ class TestSIFT(TestCase):
 
         gray_front_img, front_kp, front_desc = sift.fetch_sift_info(octo_front)
         gray_offset_img, offset_kp, offset_desc = sift.fetch_sift_info(octo_offset)
-        sift.inspect_sift(front_kp, front_desc, 0)
+        sift.inspect_keypoint_and_descriptor(front_kp, front_desc, 0)
 
         index = 0
         columns = 4

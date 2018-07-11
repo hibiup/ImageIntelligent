@@ -1,5 +1,5 @@
 from unittest import TestCase
-from sift import sift_keypoint_sample as sift
+from sift import sift_feature_fetcher as sift
 import cv2
 import matplotlib.pyplot as plt
 from numpy import arange, cos, sin, pi
@@ -54,8 +54,8 @@ class TestSIFT(TestCase):
 
         octo_front, octo_offset = get_sample_images()
 
-        gray_front_img, front_kp, front_desc = sift.fetch_sift_info(octo_front)
-        gray_offset_img, offset_kp, offset_desc = sift.fetch_sift_info(octo_offset)
+        gray_front_img, front_kp, front_desc = sift.fetch_sift_info(octo_front, sift.to_gray)
+        gray_offset_img, offset_kp, offset_desc = sift.fetch_sift_info(octo_offset, sift.to_gray)
         sift.inspect_keypoint_and_descriptor(front_kp, front_desc, 0)
 
         index = 0

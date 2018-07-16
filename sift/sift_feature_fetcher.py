@@ -1,15 +1,9 @@
 import cv2
 
 
-def fetch_sift_info(img, gaussian):
-    gray_img = gaussian(img)
-    kp, desc = gen_sift_features(gray_img)
-    return gray_img, kp, desc
-
-
-def to_gray(color_img, mode=cv2.COLOR_BGR2GRAY):
+def to_gray(color_img):
     """ 转成灰阶图 """
-    gray = cv2.cvtColor(color_img, mode)  # cv2.CV_32S
+    gray = cv2.cvtColor(color_img, cv2.COLOR_BGR2GRAY)  # cv2.CV_32S
     return gray
 
 
@@ -17,6 +11,12 @@ def to_canny(img, low_threshold=100, ratio=3):
     """ 抽取轮廓 """
     edges = cv2.Canny(img, low_threshold, ratio * low_threshold, cv2.COLOR_BGR2GRAY)
     return edges
+
+
+def fetch_sift_info(img, gaussian=to_gray):
+    gray_img = gaussian(img)
+    kp, desc = gen_sift_features(gray_img)
+    return gray_img, kp, desc
 
 
 def gen_sift_features(gray_img):
@@ -48,9 +48,9 @@ def inspect_keypoint_and_descriptor(keypoints, descriptors, index):
     print('\n\tdescriptor:\n', desc)
 
 
-def show_img_keypoint(img, gaussian=to_gray):
+def show_img_keypoint(img):
     """ 返回带有 keypoint 的图 """
-    gray_img, kp, desc = fetch_sift_info(img, gaussian)
+    gray_img, kp, desc = fetch_sift_info(img, gaussian=to_gray)
 
     # 合成带有 keypoint 的图
     kp_img = cv2.drawKeypoints(img, kp, img.copy())

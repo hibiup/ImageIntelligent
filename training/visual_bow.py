@@ -23,7 +23,7 @@ def fetch_image_feature(raw_data, label):
 
 async def load_file_data(filename, label, loop, thread_pool):
     try:
-        async with aiofiles.open(f"images/octopus/training/{filename}", "rb") as image:
+        async with aiofiles.open(f"images/traningset/positive/{filename}", "rb") as image:
             print(f'Opening: "{image._file.name}"')
             return await loop.run_in_executor(thread_pool, fetch_image_feature, await image.read(), label)
     except Exception as e:

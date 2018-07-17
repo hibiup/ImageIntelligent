@@ -5,12 +5,12 @@ import numpy
 import cv2
 import numpy as np
 from sklearn import cluster
-import pickle
 
 
-def list_training_resource():
-    with open("images/octopus/files.txt") as f:
-        file_dict = dict(item.strip().split(" ") for item in f.readlines())
+def list_training_resource(type, sample=None):
+    with open(f"images/trainingset/{type}_list.txt") as f:
+        file_dict = dict(item.split(" ") for item in (f.readlines() if sample is None else np.random.choice(f.readlines(), size=sample)))
+        #file_dict = dict(file_list if sample is None else np.random.choice(file_list, size=sample))
         return file_dict
 
 
@@ -23,7 +23,7 @@ def fetch_image_feature(raw_data, label):
 
 async def load_file_data(filename, label, loop, thread_pool):
     try:
-        async with aiofiles.open(f"images/traningset/positive/{filename}", "rb") as image:
+        async with aiofiles.open(f"images/trainingset/{filename}", "rb") as image:
             print(f'Opening: "{image._file.name}"')
             return await loop.run_in_executor(thread_pool, fetch_image_feature, await image.read(), label)
     except Exception as e:
@@ -34,7 +34,8 @@ async def load_file_data(filename, label, loop, thread_pool):
 def generate_raw_feature_dataset(thread_number=10):
     from concurrent import futures
     tasks = []
-    file_dict = list_training_resource()
+    file_dict = list_training_resource("positive")
+    file_dict.update(list_training_resource("negative", sample=len(file_dict)*3))
 
     loop = asyncio.get_event_loop()
     with futures.ThreadPoolExecutor(thread_number) as executor:

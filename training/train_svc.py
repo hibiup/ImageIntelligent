@@ -1,6 +1,7 @@
 from sklearn.grid_search import GridSearchCV
 from sklearn.svm import SVC
 
+
 def train_svc(X, y):
     c_vals = [0.0001, 0.01, 0.1, 1, 5, 10, 100, 1000]
     param_grid = [

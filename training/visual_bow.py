@@ -9,7 +9,7 @@ from sklearn import cluster
 
 def list_training_resource(type, sample=None):
     with open(f"images/trainingset/{type}_list.txt") as f:
-        file_dict = dict(item.split(" ") for item in (f.readlines() if sample is None else np.random.choice(f.readlines(), size=sample)))
+        file_dict = dict(item.strip().split(" ") for item in (f.readlines() if sample is None else np.random.choice(f.readlines(), size=sample)))
         return file_dict
 
 

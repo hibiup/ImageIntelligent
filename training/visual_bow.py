@@ -10,7 +10,6 @@ from sklearn import cluster
 def list_training_resource(type, sample=None):
     with open(f"images/trainingset/{type}_list.txt") as f:
         file_dict = dict(item.split(" ") for item in (f.readlines() if sample is None else np.random.choice(f.readlines(), size=sample)))
-        #file_dict = dict(file_list if sample is None else np.random.choice(file_list, size=sample))
         return file_dict
 
 
@@ -31,11 +30,11 @@ async def load_file_data(filename, label, loop, thread_pool):
         return None
 
 
-def generate_raw_feature_dataset(thread_number=10):
+def generate_raw_feature_dataset(thread_number=10, sample=None):
     from concurrent import futures
     tasks = []
-    file_dict = list_training_resource("positive")
-    file_dict.update(list_training_resource("negative", sample=len(file_dict)*3))
+    file_dict = list_training_resource("positive", sample=sample)
+    file_dict.update(list_training_resource("negative", sample=len(file_dict)))
 
     loop = asyncio.get_event_loop()
     with futures.ThreadPoolExecutor(thread_number) as executor:
@@ -69,7 +68,7 @@ def cluster_feature(description_set, cluster_model=cluster.KMeans(n_clusters=750
 
     print('Using clustering model %s...' % repr(model))
     # 训练 KMeans 模型．这一步的作用是为类似的　feature　归类．
-    model.fit(all_train_descriptors)
+    model.fit(np.array(all_train_descriptors))
 
     print('Using clustering model to generate BoW histograms for each image.')
     # 用 KMeans 模型来 “预测” 图像，意味着我们用归类过的feature来重新规范图像的含义，结果将用于训练 SVC 模型
@@ -89,9 +88,12 @@ def image_to_vector(img_path, cluster_model):
     为要测试的图片生成直方图
     """
     img = cv2.imread(img_path)
-    _, kp, desc = sift.fetch_sift_info(img)
+    if img is None:
+        return None
 
+    _, kp, desc = sift.fetch_sift_info(img)
     clustered_desc = cluster_model.predict(desc)
+
     test_img_bow_hist = np.bincount(clustered_desc, minlength=cluster_model.n_clusters)
 
     # 因为 sklearn 接受二维参数，而　np.bincount　的输出是一维的，因此需要将结果转成　array[[1,2,3]]　的形式

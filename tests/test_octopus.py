@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-class TestImageIntelligent(TestCase):
+class TestImageRecognize(TestCase):
     def test_generate_image_histogram(self):
         with open("data/cluster_model.pickle", 'rb') as f:
             model = pickle.load(f)
@@ -50,9 +50,9 @@ class TestImageIntelligent(TestCase):
                 pickle.dump(svc, svcfile)
 
     def test_predict(self):
-        for factor in ["positive", "negative"]:
+        for factor in ["test"]:
             print(f"== {factor} =========================")
-            test_files = visual_bow.list_training_resource(factor, sample=10)
+            test_files = visual_bow.list_training_resource(factor)
             with open("data/svc_model.pickle", "rb") as model_file, open("data/cluster_model.pickle", 'rb') as cluster_file:
                 model = pickle.load(model_file)
                 cluster = pickle.load(cluster_file)
